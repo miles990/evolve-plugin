@@ -78,11 +78,12 @@ grep "^version:" /path/to/skills/SKILL.md | head -1
 # 輸出：version: 5.1.0
 ```
 
-### 方式 C：從 skillpkg 讀取
+### 方式 C：從 Plugin 安裝路徑讀取
 
 ```bash
-# 使用 mcp__skillpkg__skill_info 工具
-# 查詢已安裝的 evolve skill 版本
+# 檢查 Claude Code Plugin 安裝路徑
+cat ~/.claude/plugins/installed_plugins.json | jq '.plugins["evolve@evolve-plugin"]'
+# 輸出會包含 version 欄位
 ```
 
 ## Step 2: 取得遠端版本
@@ -172,7 +173,7 @@ PATCH = Bug 修復
 │       │                                                         │
 │  ┌────┼────────────────┐                                        │
 │  ↓    ↓                ↓                                        │
-│ Git  skillpkg       手動複製                                    │
+│ Git  Plugin        手動複製                                     │
 │  ↓    ↓                ↓                                        │
 │ pull reinstall    提示手動更新                                  │
 └─────────────────────────────────────────────────────────────────┘
@@ -187,21 +188,12 @@ git fetch origin
 git pull origin main
 ```
 
-### 方式 B：skillpkg 重新安裝
+### 方式 B：Claude Code Plugin 更新（推薦）
 
 ```bash
-# 使用 skillpkg 工具
-mcp__skillpkg__uninstall_skill id="evolve" scope="local"
-mcp__skillpkg__install_skill source="github:miles990/self-evolving-agent" scope="local"
-mcp__skillpkg__sync_skills
-```
-
-### 方式 C：Claude Code Plugin 更新
-
-```bash
-# 若透過 /install-plugin 安裝
-# 需要用戶執行：
-/install-plugin miles990/self-evolving-agent
+# 若透過 Plugin Marketplace 安裝
+# 重新安裝以取得最新版本：
+/plugin install evolve@evolve-plugin
 ```
 
 ## 更新後驗證
@@ -269,7 +261,7 @@ version: 5.1.0
 │                                                                 │
 │  建議：                                                         │
 │  • 手動執行：git pull origin main                              │
-│  • 或重新安裝：/install-plugin miles990/self-evolving-agent    │
+│  • 或重新安裝：/plugin install evolve@evolve-plugin            │
 │                                                                 │
 │  → 繼續使用當前版本執行任務                                     │
 └─────────────────────────────────────────────────────────────────┘
