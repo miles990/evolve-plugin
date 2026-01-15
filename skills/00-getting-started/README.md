@@ -8,7 +8,6 @@
 |------|------|-------------|
 | [init.md](./_base/init.md) | 初始化指南、記憶系統建立 | 1️⃣ 第一個讀 |
 | [psb-setup.md](./_base/psb-setup.md) | PSB 環境檢查清單 | 2️⃣ 第二個讀 |
-| [version-check.md](./_base/version-check.md) | 版本檢查與自動更新 | 🔄 自動執行 |
 
 ## 快速開始
 

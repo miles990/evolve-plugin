@@ -7,7 +7,7 @@ triggers: [new-skill, create-skill, 建立skill, 新增skill]
 
 # Skill Creator
 
-> 完整工作流：引導式訪談 → 分析生成 → 驗證 → 發布到 GitHub
+> 完整工作流：引導式訪談 → 分析生成 → 驗證 → **Token 優化** → 發布到 GitHub
 
 ## 使用方式
 
@@ -15,7 +15,7 @@ triggers: [new-skill, create-skill, 建立skill, 新增skill]
 /evolve --new-skill "skill 名稱"
 ```
 
-## 四階段流程
+## 五階段流程
 
 ### Stage 1: 引導式訪談
 
@@ -61,6 +61,38 @@ triggers: [new-skill, create-skill, 建立skill, 新增skill]
 
 輸出：驗證報告
 
+### Stage 3.5: Token 優化
+
+使用 `skill-optimizer` 優化新建立的 skill：
+
+1. **分析 token 效率**：
+   - 檢查總行數（目標 < 300 行）
+   - 計算核心內容佔比（目標 > 70%）
+   - 識別可外連的內容（大型範例、ASCII 圖表、模板）
+
+2. **執行優化**：
+   - 大型 ASCII 圖表 → 簡化為單行描述
+   - 完整範例（> 20 行）→ 外連至 `extended/examples.md`
+   - 模板（> 10 行）→ 外連至 `extended/templates.md`
+   - 配置範例 → 外連至擴展檔案
+
+3. **建立分層結構**（如需要）：
+   ```
+   skill-name/
+   ├── SKILL.md           # 核心層 (< 300 行)
+   └── extended/          # 擴展層 (按需載入)
+       ├── examples.md
+       └── templates.md
+   ```
+
+4. **驗證優化結果**：
+   - 優化前後行數比較
+   - 確認功能完整性未受影響
+
+輸出：優化報告（節省 X% tokens）
+
+> 💡 參考：[claude-domain-skills/methodology/skill-optimizer](https://github.com/miles990/claude-domain-skills/tree/main/methodology/skill-optimizer)
+
 ### Stage 4: 發布到 GitHub
 
 1. 詢問：建立新 repo 或加入現有 repo？
@@ -93,4 +125,30 @@ GitHub: https://github.com/<user>/<repo>
 
 ```bash
 ./scripts/publish-skill.sh <skill-directory> [--new-repo]
+```
+
+## Plugin 格式轉換
+
+將 Skills 倉庫轉換為 Claude Code Plugin Marketplace 格式：
+
+```bash
+./scripts/convert-to-plugin.sh <skills-repo-path> [--marketplace|--category]
+```
+
+**模式：**
+- `--marketplace`：建立 marketplace.json，頂層目錄成為 plugin（推薦）
+- `--category`：為每個頂層分類建立獨立的 plugin.json
+
+**範例：**
+```bash
+# 轉換整個 Skills 倉庫為 marketplace
+./scripts/convert-to-plugin.sh ~/Workspace/my-skills --marketplace
+
+# 輸出：
+# ✅ marketplace.json 已建立
+# ✅ 各分類 plugin.json 已建立
+#
+# 安裝指令:
+#   /plugin marketplace add <user>/my-skills
+#   /plugin install <plugin-name>@my-skills
 ```

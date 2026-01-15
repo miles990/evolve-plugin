@@ -61,14 +61,41 @@ Grep(
 )
 ```
 
-## 搜尋 Skill
+## 習得 Skill
 
-若有能力差距，嘗試習得：
+若有能力差距，先檢查已安裝狀態和版本再習得：
 
 ```python
-# 搜尋可用的 skill
-mcp__skillpkg__search_skills({
-    "query": "[能力關鍵字]",
-    "source": "all"
-})
+# Step 1: 檢查已安裝 plugins
+installed = Read("~/.claude/plugins/installed_plugins.json")
+# 結構: { "plugins": { "name@marketplace": [{ "version": "x.y.z" }] } }
+
+# Step 2: 檢查已添加 marketplaces
+marketplaces = Read("~/.claude/plugins/known_marketplaces.json")
+# 常用: claude-software-skills, claude-domain-skills
+
+# Step 3: 版本檢查（若已安裝）
+if skill_installed:
+    installed_ver = installed["plugins"]["name@marketplace"][0]["version"]
+    marketplace_path = marketplaces["marketplace"]["installLocation"]
+    latest = Read(f"{marketplace_path}/{plugin}/.claude-plugin/plugin.json")
+    if installed_ver != latest["version"]:
+        # /plugin update {plugin}  # 更新到最新版
+    Skill({ skill: "skill-name" })
+
+# Step 4: 智能決策
+elif marketplace_exists:
+    # /plugin install {skill}@{marketplace}
+else:
+    # /plugin marketplace add miles990/{marketplace}
+    # /plugin install {skill}@{marketplace}
 ```
+
+### 快速參考
+
+| 需求類型 | Marketplace | 安裝/更新指令 |
+|----------|-------------|---------------|
+| 軟體開發 | `claude-software-skills` | `/plugin install {category}@claude-software-skills` |
+| 領域知識 | `claude-domain-skills` | `/plugin install {category}@claude-domain-skills` |
+| 官方工具 | `claude-plugins-official` | `/plugin install {plugin}@claude-plugins-official` |
+| 更新 | - | `/plugin update {plugin-name}` |
